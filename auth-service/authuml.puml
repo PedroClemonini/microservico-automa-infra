@@ -1,0 +1,221 @@
+@startuml
+class com.ifsp.gru.oficinas4.infra.microservices.auth_service.infraestructure.security.CustomUserDetailsService {
+- UserRepositoryPort userRepositoryPort
++ UserDetails loadUserByUsername(String)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.microservices.auth_service.infraestructure.configuration.SecurityConfig {
+- JwtAuthenticationFilter jwtAuthFilter
+- UserDetailsService userDetailsService
+- PasswordEncoder passwordEncoder
++ AuthenticationProvider authenticationProvider()
++ AuthenticationManager authenticationManager(AuthenticationConfiguration)
++ SecurityFilterChain securityFilterChain(HttpSecurity)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.microservices.auth_service.core.usecases.AuthenticateUserUseCase {
+- UserRepositoryPort userRepository
+- PasswordEncoder passwordEncoder
++ User execute(String,String)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.microservices.auth_service.infraestructure.security.JwtService {
+- String secretKey
+- long jwtExpiration
++ String generateToken(UserDetails)
++ String generateToken(Map<String,Object>,UserDetails)
++ String extractUsername(String)
++ T extractClaim(String,Function<Claims,T>)
++ boolean isTokenValid(String,UserDetails)
+- boolean isTokenExpired(String)
+- Date extractExpiration(String)
+- Claims extractAllClaims(String)
+- Key getSignInKey()
+}
+
+
+class com.ifsp.gru.oficinas4.infra.microservices.auth_service.adapter.web.controller.AuthResponse {
+- String token
+- UserResponse user
+}
+
+class com.ifsp.gru.oficinas4.infra.microservices.auth_service.infraestructure.configuration.PasswordEncoderConfig {
++ PasswordEncoder passwordEncoder()
+}
+
+class com.ifsp.gru.oficinas4.infra.microservices.auth_service.adapter.web.controller.AuthController {
+- RegisterUserUseCase registerUseCase
+- UserWebMapper mapper
+- JwtService jwtService
+- AuthenticationManager authenticationManager
+- UserDetailsService userDetailsService
+- FindUserByEmailUseCase findUserByEmailUseCase
++ ResponseEntity<AuthResponse> register(UserRegisterRequest)
++ ResponseEntity<AuthResponse> login(UserLoginRequest)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.microservices.auth_service.AuthServiceApplication {
++ {static} void main(String[])
+}
+
+class com.ifsp.gru.oficinas4.infra.microservices.auth_service.core.usecases.FindUserByEmailUseCase {
+- UserRepositoryPort userRepository
++ User execute(String)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.microservices.auth_service.adapter.web.dto.UserResponse {
+- Long id
+- String name
+- String email
+- String role
+}
+
+class com.ifsp.gru.oficinas4.infra.microservices.auth_service.adapter.persistence.mapper.UserMapper {
++ UserJpaEntity toJpaEntity(User)
++ User toDomain(UserJpaEntity)
+}
+
+class com.ifsp.gru.oficinas4.infra.microservices.auth_service.adapter.web.dto.UserLoginRequest {
+- String email
+- String password
+}
+
+class com.ifsp.gru.oficinas4.infra.microservices.auth_service.exception.AuthenticationException {
+}
+class com.ifsp.gru.oficinas4.infra.automa_infra.exception.ResourceNotFoundException {
+}
+class com.ifsp.gru.oficinas4.infra.microservices.auth_service.infraestructure.security.JwtAuthenticationFilter {
+- JwtService jwtService
+- CustomUserDetailsService userDetailsService
+# void doFilterInternal(HttpServletRequest,HttpServletResponse,FilterChain)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.exception.UnauthorizedException {
+}
+class com.ifsp.gru.oficinas4.infra.microservices.auth_service.adapter.persistence.UserPersistenceAdapter {
+- UserRepository repository
+- UserMapper mapper
++ User save(User)
++ Optional<User> findById(Long)
++ void deleteById(Long)
++ Optional<User> findByEmail(String)
++ boolean existsByEmail(String)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.microservices.auth_service.adapter.web.mapper.UserWebMapper {
++ User toDomain(UserRegisterRequest)
++ UserResponse toResponse(User)
+}
+
+interface com.ifsp.gru.oficinas4.infra.microservices.auth_service.adapter.persistence.repository.UserRepository {
+~ Optional<UserJpaEntity> findByEmail(String)
+~ boolean existsByEmail(String)
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.exception.ValidationErrorResponse {
+- int status
+- String message
+- LocalDateTime timestamp
+- String path
+- Map<String,String> errors
++ String path()
++ LocalDateTime timestamp()
++ String message()
++ Map<String,String> errors()
++ int status()
+}
+
+
+class com.ifsp.gru.oficinas4.infra.microservices.auth_service.core.usecases.RegisterUserUseCase {
+- UserRepositoryPort userRepository
+- PasswordEncoder passwordEncoder
++ User execute(User)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.exception.DuplicateResourceException {
+}
+class com.ifsp.gru.oficinas4.infra.microservices.auth_service.adapter.web.dto.UserRegisterRequest {
+- String name
+- String email
+- String password
+- String role
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.exception.GlobalExceptionHandler {
++ ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException,WebRequest)
++ ResponseEntity<ErrorResponse> handleDuplicateResource(DuplicateResourceException,WebRequest)
++ ResponseEntity<ErrorResponse> handleUnauthorized(RuntimeException,WebRequest)
++ ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException,WebRequest)
++ ResponseEntity<ValidationErrorResponse> handleValidationErrors(MethodArgumentNotValidException,WebRequest)
++ ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException,WebRequest)
++ ResponseEntity<ErrorResponse> handleGenericException(Exception,WebRequest)
++ ResponseEntity<?> handleUnreadableBody(HttpMessageNotReadableException)
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.exception.BusinessException {
+}
+class com.ifsp.gru.oficinas4.infra.automa_infra.exception.ErrorResponse {
+- int status
+- String message
+- LocalDateTime timestamp
+- String path
++ String message()
++ int status()
++ LocalDateTime timestamp()
++ String path()
+}
+
+
+class com.ifsp.gru.oficinas4.infra.microservices.auth_service.adapter.persistence.entity.UserJpaEntity {
+- Long id
+- String name
+- String email
+- String password
+- String role
+}
+
+class com.ifsp.gru.oficinas4.infra.microservices.auth_service.core.domain.User {
+- Long id
+- String name
+- String email
+- String password
+- String role
++ Collection<? extends GrantedAuthority> getAuthorities()
++ String getUsername()
++ String getPassword()
++ boolean isAccountNonExpired()
++ boolean isAccountNonLocked()
++ boolean isCredentialsNonExpired()
++ boolean isEnabled()
+}
+
+
+interface com.ifsp.gru.oficinas4.infra.microservices.auth_service.core.port.UserRepositoryPort {
+~ User save(User)
+~ Optional<User> findById(Long)
+~ void deleteById(Long)
+~ Optional<User> findByEmail(String)
+~ boolean existsByEmail(String)
+}
+
+
+
+org.springframework.security.core.userdetails.UserDetailsService <|.. com.ifsp.gru.oficinas4.infra.microservices.auth_service.infraestructure.security.CustomUserDetailsService
+com.ifsp.gru.oficinas4.infra.microservices.auth_service.exception.RuntimeException <|-- com.ifsp.gru.oficinas4.infra.microservices.auth_service.exception.AuthenticationException
+com.ifsp.gru.oficinas4.infra.automa_infra.exception.RuntimeException <|-- com.ifsp.gru.oficinas4.infra.automa_infra.exception.ResourceNotFoundException
+org.springframework.web.filter.OncePerRequestFilter <|-- com.ifsp.gru.oficinas4.infra.microservices.auth_service.infraestructure.security.JwtAuthenticationFilter
+com.ifsp.gru.oficinas4.infra.automa_infra.exception.RuntimeException <|-- com.ifsp.gru.oficinas4.infra.automa_infra.exception.UnauthorizedException
+com.ifsp.gru.oficinas4.infra.microservices.auth_service.core.port.UserRepositoryPort <|.. com.ifsp.gru.oficinas4.infra.microservices.auth_service.adapter.persistence.UserPersistenceAdapter
+org.springframework.data.jpa.repository.JpaRepository <|-- com.ifsp.gru.oficinas4.infra.microservices.auth_service.adapter.persistence.repository.UserRepository
+com.ifsp.gru.oficinas4.infra.automa_infra.exception.RuntimeException <|-- com.ifsp.gru.oficinas4.infra.automa_infra.exception.DuplicateResourceException
+com.ifsp.gru.oficinas4.infra.automa_infra.exception.RuntimeException <|-- com.ifsp.gru.oficinas4.infra.automa_infra.exception.BusinessException
+org.springframework.security.core.userdetails.UserDetails <|.. com.ifsp.gru.oficinas4.infra.microservices.auth_service.core.domain.User
+@enduml

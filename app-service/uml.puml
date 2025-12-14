@@ -1,0 +1,878 @@
+@startuml
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.web.applicationResource.dto.ApplicationResourceResponse {
+- Long id
+- LocalDateTime addedAt
+- ApplicationResponse application
+- ResourceResponse resources
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.application.DeployApplicationUseCase {
+- ApplicationRepositoryPort applicationRepository
+- ProvisioningAsyncService provisioningAsyncService
+- SimpMessagingTemplate messagingTemplate
++ Application execute(Long,Long)
+- void notifyStatus(Long,String,String)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.application.CreateApplicationUseCase {
+- ApplicationRepositoryPort applicationRepositoryPort
++ Application execute(Application,Long,String,String)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.exception.ValidationErrorResponse {
+- int status
+- String message
+- LocalDateTime timestamp
+- String path
+- Map<String,String> errors
++ String path()
++ LocalDateTime timestamp()
++ String message()
++ Map<String,String> errors()
++ int status()
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.exception.AuthenticationException {
+}
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.ApplicationResourcePersistenceAdapter {
+- ApplicationResourceRepository repository
+- ApplicationResourceMapper mapper
++ ApplicationResource save(ApplicationResource)
++ Optional<ApplicationResource> findById(Long)
++ void deleteById(Long)
++ boolean existsById(Long)
++ boolean existsByApplicationIdAndResourceId(Long,Long)
++ List<List<String>> findCodeSnippetsByApplicationId(Long)
++ Page<ApplicationResource> findAll(Pageable)
++ long count()
++ Page<ApplicationResource> findByApplicationCreatedById(Long,Pageable)
++ boolean existsByResourceId(Long)
++ List<ApplicationResource> findByApplicationId(Long)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.application.ListApplicationsUseCase {
+- ApplicationRepositoryPort applicationRepository
++ Page<Application> execute(String,String,Long,Pageable)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.mapper.ResourceMapper {
+- ResourceTypeMapper resourceTypeMapper
++ ResourceJpaEntity toJpaEntity(Resource)
++ Resource toDomain(ResourceJpaEntity)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.resource.ToggleResourceActiveUseCase {
+- ResourceRepositoryPort resourceRepository
++ Resource execute(Long,Long)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.web.resourceType.dto.ResourceTypeRequest {
+- String name
+- String description
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.exception.UnauthorizedException {
+}
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.entity.ResourceJpaEntity {
+- Long id
+- Long createdById
+- String createdByName
+- String createdByEmail
+- ResourceTypeJpaEntity resourceType
+- String name
+- String description
+- String version
+- List<String> codeSnippet
+- Boolean active
+- LocalDateTime createdAt
+- LocalDateTime updatedAt
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.infrastructure.configuration.WebSocketConfig {
+- WebSocketAuthInterceptor authInterceptor
++ void configureMessageBroker(MessageBrokerRegistry)
++ void configureClientInboundChannel(ChannelRegistration)
++ void registerStompEndpoints(StompEndpointRegistry)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.domain.ResourceType {
+- Long id
+- String name
+- String description
+- Long createdById
+- String createdByName
+- String createdByEmail
+- LocalDateTime createdAt
+- LocalDateTime updatedAt
+}
+
+interface com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.repository.ResourceTypeRepository {
+~ Page<ResourceTypeJpaEntity> findByCreatedById(Long,Pageable)
+~ Page<ResourceTypeJpaEntity> findByNameContainingIgnoreCaseAndCreatedById(String,Long,Pageable)
+~ boolean existsByNameIgnoreCase(String)
+~ Page<ResourceTypeJpaEntity> findByNameContainingIgnoreCase(String,Pageable)
+~ boolean existsByNameIgnoreCaseAndCreatedById(String,Long)
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.resourceType.DeleteResourceTypeUseCase {
+- ResourceTypeRepositoryPort repository
+- ResourceRepositoryPort resourceRepository
++ void execute(Long,Long)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.entity.ApplicationResourceJpaEntity {
+- Long id
+- ApplicationJpaEntity application
+- ResourceJpaEntity resources
+- LocalDateTime addedAt
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.web.applicationResource.dto.ApplicationResourceRequest {
+- Long applicationId
+- Long resourceId
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.resourceType.UpdateResourceTypeUseCase {
+- ResourceTypeRepositoryPort repository
++ ResourceType execute(Long,ResourceType,Long)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.resourceType.CreateResourceTypeUseCase {
+- ResourceTypeRepositoryPort repository
++ ResourceType execute(ResourceType,Long,String,String)
+}
+
+
+interface com.ifsp.gru.oficinas4.infra.automa_infra.core.port.applicationResources.ApplicationResourceRepositoryPort {
+~ ApplicationResource save(ApplicationResource)
+~ Optional<ApplicationResource> findById(Long)
+~ void deleteById(Long)
+~ boolean existsById(Long)
+~ boolean existsByApplicationIdAndResourceId(Long,Long)
+~ List<List<String>> findCodeSnippetsByApplicationId(Long)
+~ Page<ApplicationResource> findAll(Pageable)
+~ List<ApplicationResource> findByApplicationId(Long)
+~ long count()
+~ Page<ApplicationResource> findByApplicationCreatedById(Long,Pageable)
+~ boolean existsByResourceId(Long)
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.Configuration.JwtAuthenticationFilter {
+- JwtService jwtService
+- {static} List<String> EXCLUDED_URLS
+# void doFilterInternal(HttpServletRequest,HttpServletResponse,FilterChain)
+# boolean shouldNotFilter(HttpServletRequest)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.domain.Application {
+- Long id
+- User createdBy
+- String name
+- String description
+- String status
+- Long createdById
+- String createdByName
+- String createdByEmail
+- String sshUser
+- String sshPassword
+- String ipAddress
+- LocalDateTime createdAt
+- LocalDateTime updatedAt
+- LocalDateTime lastDeployedAt
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.resource.UpdateResourceUseCase {
+- ResourceRepositoryPort resourceRepository
+- ResourceTypeRepositoryPort resourceTypeRepository
++ Resource execute(Long,Resource,Long)
+- boolean hasText(String)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.web.applicationResource.mapper.ApplicationResourceWebMapper {
+- ApplicationWebMapper applicationMapper
+- ResourceWebMapper resourceMapper
++ ApplicationResource toDomain(ApplicationResourceRequest)
++ ApplicationResourceResponse toResponse(ApplicationResource)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.applicationResource.CreateApplicationResourceUseCase {
+- ApplicationResourceRepositoryPort repository
+- ApplicationRepositoryPort applicationRepository
+- ResourceRepositoryPort resourceRepository
++ ApplicationResource execute(Long,Long,Long)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.web.resource.mapper.ResourceWebMapper {
+- ResourceTypeWebMapper resourceTypeWebMapper
++ Resource toDomain(ResourceRequest)
++ ResourceResponse toResponse(Resource)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.entity.ApplicationJpaEntity {
+- Long id
+- Long createdById
+- String createdByName
+- String createdByEmail
+- String name
+- String description
+- String status
+- String sshUser
+- String sshPassword
+- String ipAddress
+- LocalDateTime createdAt
+- LocalDateTime updatedAt
+- LocalDateTime lastDeployedAt
+# void onCreate()
+# void onUpdate()
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.web.resourceType.ResourceTypeController {
+- CreateResourceTypeUseCase createUseCase
+- UpdateResourceTypeUseCase updateUseCase
+- GetResourceTypeUseCase getUseCase
+- ListResourceTypeUseCase listUseCase
+- DeleteResourceTypeUseCase deleteUseCase
+- ResourceTypeWebMapper mapper
+- JwtService jwtService
++ ResponseEntity<ResourceType> create(ResourceTypeRequest,String,Authentication)
++ ResponseEntity<ResourceTypeResponse> getById(Long,Authentication)
++ ResponseEntity<Page<ResourceTypeResponse>> list(String,Pageable,Authentication)
++ ResponseEntity<ResourceTypeResponse> update(Long,ResourceTypeRequest,Authentication)
++ ResponseEntity<Void> delete(Long,Authentication)
+- Long extractUserIdFromAuth(Authentication)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.external.auth.AuthServiceClient {
+- RestTemplate restTemplate
+- String authServiceUrl
++ UserPublicData findUserById(Long)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.resourceType.ListResourceTypeUseCase {
+- ResourceTypeRepositoryPort repository
++ Page<ResourceType> execute(Pageable,Long)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.application.DeleteApplicationUseCase {
+- ApplicationRepositoryPort applicationRepository
++ void execute(Long,Long)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.domain.ApplicationResource {
+- Long id
+- Application application
+- Resource resources
+- LocalDateTime addedAt
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.exception.DuplicateResourceException {
+}
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.resource.DeleteResourceUseCase {
+- ResourceRepositoryPort resourceRepository
+- ApplicationResourceRepositoryPort applicationResourceRepository
++ void execute(Long,Long)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.external.terraform.TerraformDirectoryManager {
+- File baseDir
+- void initializeBaseDirectory()
++ File getOrCreateWorkDir(Long)
++ void writeMainTfFile(File,String)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.applicationResource.UpdateApplicationResourceUseCase {
+- ApplicationResourceRepositoryPort repository
+- ApplicationRepositoryPort applicationRepository
+- ResourceRepositoryPort resourceRepository
++ ApplicationResource execute(Long,ApplicationResource,Long)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.application.UpdateApplicationUseCase {
+- ApplicationRepositoryPort applicationRepository
++ Application execute(Long,Application,Long)
+- boolean hasText(String)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.ResourcePersistenceAdapter {
+- ResourceRepository repository
+- ResourceMapper mapper
++ Resource save(Resource)
++ Optional<Resource> findById(Long)
++ void deleteById(Long)
++ boolean existsById(Long)
++ boolean existsByResourceTypeId(Long)
++ Page<Resource> findByCreatedById(Long,Pageable)
++ Page<Resource> findByNameContainingIgnoreCaseAndCreatedById(String,Long,Pageable)
++ Page<Resource> findByResourceTypeIdAndCreatedById(Long,Long,Pageable)
++ Page<Resource> findByActiveAndCreatedById(Boolean,Long,Pageable)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.domain.Resource {
+- Long id
+- ResourceType resourceType
+- String name
+- String description
+- String version
+- List<String> codeSnippet
+- Boolean active
+- LocalDateTime createdAt
+- LocalDateTime updatedAt
+- Long createdById
+- String createdByName
+- String createdByEmail
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.ApplicationPersistenceAdapter {
+- ApplicationRepository repository
+- ApplicationMapper mapper
++ Application save(Application)
++ Optional<Application> findById(Long)
++ void delete(Long)
++ boolean existsByNameAndCreatedById(String,Long)
++ Page<Application> findByNameContainingIgnoreCaseAndCreatedById(String,Long,Pageable)
++ Page<Application> findAll(Pageable)
++ Page<Application> findByNameContainingIgnoreCase(String,Pageable)
++ Page<Application> findByStatus(String,Pageable)
++ Page<Application> findByCreatedById(Long,Pageable)
++ Page<Application> findByCreatedByIdAndStatus(Long,String,Pageable)
++ Page<Application> findByNameContainingIgnoreCaseAndStatus(String,String,Pageable)
++ Page<Application> findByCreatedAtAfter(LocalDateTime,Pageable)
++ Page<Application> findByNameContainingIgnoreCaseAndStatusAndCreatedById(String,String,Long,Pageable)
++ Page<Application> findByLastDeployedAtAfter(LocalDateTime,Pageable)
++ Page<Application> findByLastDeployedAtIsNull(Pageable)
++ Page<Application> findApplicationsNeedingAttention(LocalDateTime,Pageable)
++ long countByStatus(String)
++ long countByCreatedById(Long)
++ long countByCreatedByIdAndStatus(Long,String)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.applicationResource.GetApplicationResourceUseCase {
+- ApplicationResourceRepositoryPort repository
++ ApplicationResource execute(Long,Long)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.web.resource.dto.ResourceResponse {
+- Long id
+- String name
+- String description
+- String version
+- List<String> codeSnippet
+- Boolean active
+- ResourceTypeResponse resourceType
+- LocalDateTime createdAt
+- LocalDateTime updatedAt
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.web.application.mapper.ApplicationWebMapper {
++ Application toDomain(ApplicationRequest)
++ ApplicationResponse toResponse(Application)
+}
+
+interface com.ifsp.gru.oficinas4.infra.automa_infra.core.port.resources.ResourceRepositoryPort {
+~ Resource save(Resource)
+~ Optional<Resource> findById(Long)
+~ void deleteById(Long)
+~ boolean existsById(Long)
+~ boolean existsByResourceTypeId(Long)
+~ Page<Resource> findByCreatedById(Long,Pageable)
+~ Page<Resource> findByNameContainingIgnoreCaseAndCreatedById(String,Long,Pageable)
+~ Page<Resource> findByResourceTypeIdAndCreatedById(Long,Long,Pageable)
+~ Page<Resource> findByActiveAndCreatedById(Boolean,Long,Pageable)
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.web.resourceType.dto.ResourceTypeResponse {
+- Long id
+- String name
+- String description
+}
+
+interface com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.repository.ApplicationResourceRepository {
+~ Page<ApplicationResourceJpaEntity> findByApplicationCreatedById(Long,Pageable)
+~ boolean existsByResourcesId(Long)
+~ boolean existsByApplicationIdAndResourcesId(Long,Long)
+~ List<ApplicationResourceJpaEntity> findAllByApplicationId(Long)
+~ List<ApplicationResource> findByApplicationId(Long)
+~ List<List<String>> findCodeSnippetsByApplicationId(Long)
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.external.auth.dto.TokenValidationResponse {
+- boolean isValid
+- Long userId
+- String username
+- String role
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.Configuration.StringListConverter {
+- {static} ObjectMapper objectMapper
++ String convertToDatabaseColumn(List<String>)
++ List<String> convertToEntityAttribute(String)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.external.terraform.TerraformDeploymentService {
+- TerraformContentGenerator contentGenerator
+- TerraformDirectoryManager directoryManager
+- TerraformExecutor executor
+- ObjectMapper objectMapper
++ ProvisioningResult provision(Application,List<List<String>>)
+- String extractPublicIpFromOutput(String)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.external.terraform.TerraformDeploymentService$ProvisioningFailureException {
+}
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.application.UpdateApplicationStatusUseCase {
+- ApplicationRepositoryPort applicationRepository
++ Application execute(Long,String,Long)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.mapper.ApplicationResourceMapper {
+- ApplicationMapper applicationMapper
+- ResourceMapper resourceMapper
++ ApplicationResourceJpaEntity toJpaEntity(ApplicationResource)
++ ApplicationResource toDomain(ApplicationResourceJpaEntity)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.Configuration.SecurityConfig {
+- JwtAuthenticationFilter jwtAuthFilter
++ SecurityFilterChain securityFilterChain(HttpSecurity)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.resource.GetResourceUseCase {
+- ResourceRepositoryPort resourceRepository
++ Resource execute(Long,Long)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.web.application.dto.ApplicationResponse {
+- Long id
+- String name
+- String description
+- String status
+- String sshUser
+- String ipAddress
+- UserSummary createdBy
+- LocalDateTime createdAt
+- LocalDateTime updatedAt
+- LocalDateTime lastDeployedAt
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.web.application.dto.ApplicationResponse$UserSummary {
+- Long id
+- String name
+- String email
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.applicationResource.ListApplicationResourcesUseCase {
+- ApplicationResourceRepositoryPort resourceRepository
+- ApplicationRepositoryPort applicationRepository
++ Page<ApplicationResource> execute(Long,Long,Pageable)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.exception.BusinessException {
+}
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.infrastructure.configuration.AsyncConfig {
++ Executor getAsyncExecutor()
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.web.resource.dto.ResourceRequest {
+- Long resourceTypeId
+- String name
+- String description
+- String version
+- List<String> codeSnippet
+- Boolean active
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.infrastructure.configuration.ProvisioningAsyncService {
+- SimpMessagingTemplate messagingTemplate
+- ApplicationResourceRepositoryPort applicationResourceRepository
+- ApplicationRepositoryPort applicationRepository
+- ProvisioningPort provisioningPort
+- ApplicationWebMapper mapper
++ void startProvisioning(Long,Long)
+- void notifyProgress(Long,Long,int,String,String)
+- void notifyFinalState(Long,Application)
+}
+
+
+interface com.ifsp.gru.oficinas4.infra.automa_infra.core.port.resourceTypes.ResourceTypeRepositoryPort {
+~ ResourceType save(ResourceType)
+~ Optional<ResourceType> findById(Long)
+~ void deleteById(Long)
+~ boolean existsById(Long)
+~ boolean existsByNameIgnoreCase(String)
+~ Page<ResourceType> findByCreatedById(Long,Pageable)
+~ Page<ResourceType> findByNameContainingIgnoreCaseAndCreatedById(String,Long,Pageable)
+~ boolean existsByNameIgnoreCaseAndCreatedById(String,Long)
+~ Page<ResourceType> findAll(Pageable)
+~ Page<ResourceType> findByNameContainingIgnoreCase(String,Pageable)
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.mapper.ResourceTypeMapper {
++ ResourceTypeJpaEntity toJpaEntity(ResourceType)
++ ResourceType toDomain(ResourceTypeJpaEntity)
+}
+
+interface com.ifsp.gru.oficinas4.infra.automa_infra.core.port.application.ProvisioningPort {
+~ ProvisioningResult provision(Application,List<List<String>>)
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.port.application.ProvisioningPort$ProvisioningResult {
+- String publicIp
+- String outputLog
++ String outputLog()
++ String publicIp()
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.web.application.ApplicationController {
+- CreateApplicationUseCase createUseCase
+- GetApplicationUseCase getUseCase
+- ListApplicationsUseCase listUseCase
+- UpdateApplicationUseCase updateUseCase
+- DeleteApplicationUseCase deleteUseCase
+- UpdateApplicationStatusUseCase updateStatusUseCase
+- DeployApplicationUseCase deployUseCase
+- ApplicationWebMapper mapper
+- JwtService jwtService
++ ResponseEntity<ApplicationResponse> create(ApplicationRequest,String,Authentication)
++ ResponseEntity<ApplicationResponse> getById(Long,Authentication)
++ ResponseEntity<Page<ApplicationResponse>> list(String,String,Pageable,Authentication)
++ ResponseEntity<ApplicationResponse> update(Long,ApplicationRequest,Authentication)
++ ResponseEntity<ApplicationResponse> updateStatus(Long,String,Authentication)
++ ResponseEntity<ApplicationResponse> deploy(Long,Authentication)
++ ResponseEntity<Void> delete(Long,Authentication)
+- Long extractUserIdFromAuth(Authentication)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.ResourceTypePersistenceAdapter {
+- ResourceTypeRepository repository
+- ResourceTypeMapper mapper
++ ResourceType save(ResourceType)
++ boolean existsByNameIgnoreCase(String)
++ Page<ResourceType> findAll(Pageable)
++ Page<ResourceType> findByNameContainingIgnoreCase(String,Pageable)
++ Optional<ResourceType> findById(Long)
++ void deleteById(Long)
++ boolean existsById(Long)
++ Page<ResourceType> findByCreatedById(Long,Pageable)
++ Page<ResourceType> findByNameContainingIgnoreCaseAndCreatedById(String,Long,Pageable)
++ boolean existsByNameIgnoreCaseAndCreatedById(String,Long)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.domain.User {
+- Long id
+- String name
+- String email
+- String password
+- String role
++ Collection<? extends GrantedAuthority> getAuthorities()
++ String getUsername()
++ String getPassword()
++ boolean isAccountNonExpired()
++ boolean isAccountNonLocked()
++ boolean isCredentialsNonExpired()
++ boolean isEnabled()
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.entity.ResourceTypeJpaEntity {
+- Long id
+- String name
+- String description
+- Long createdById
+- String createdByName
+- String createdByEmail
+- LocalDateTime createdAt
+- LocalDateTime updatedAt
+# void onCreate()
+# void onUpdate()
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.Configuration.JwtService {
+- String secretKey
+- long jwtExpiration
++ String extractUsername(String)
++ T extractClaim(String,Function<Claims,T>)
++ String generateToken(UserDetails)
++ String generateToken(Map<String,Object>,UserDetails)
+- String buildToken(Map<String,Object>,UserDetails,long)
++ boolean isTokenValid(String,UserDetails)
++ boolean isTokenExpired(String)
+- Date extractExpiration(String)
+- Claims extractAllClaims(String)
++ String extractUserName(String)
++ Long extractUserId(String)
+- Key getSignInKey()
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.external.terraform.ProxmoxApiConfig {
+- String endpoint
+- String apiToken
+- boolean insecure
+- String sshUsername
+- String sshPassword
+- String nodeName
+- String nodeAddress
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.exception.ErrorResponse {
+- int status
+- String message
+- LocalDateTime timestamp
+- String path
++ String message()
++ int status()
++ LocalDateTime timestamp()
++ String path()
+}
+
+
+interface com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.repository.ResourceRepository {
+~ boolean existsByResourceTypeId(Long)
+~ Page<ResourceJpaEntity> findByCreatedById(Long,Pageable)
+~ Page<ResourceJpaEntity> findByNameContainingIgnoreCaseAndCreatedById(String,Long,Pageable)
+~ Page<ResourceJpaEntity> findByResourceTypeIdAndCreatedById(Long,Long,Pageable)
+~ Page<ResourceJpaEntity> findByActiveAndCreatedById(Boolean,Long,Pageable)
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.application.GetApplicationUseCase {
+- ApplicationRepositoryPort applicationRepository
++ Application execute(Long,Long)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.infrastructure.configuration.WebSocketAuthInterceptor {
+- JwtService jwtService
++ Message<?> preSend(Message<?>,MessageChannel)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.web.applicationResource.ApplicationResourceController {
+- CreateApplicationResourceUseCase createUseCase
+- GetApplicationResourceUseCase getUseCase
+- ListApplicationResourcesUseCase listUseCase
+- UpdateApplicationResourceUseCase updateUseCase
+- DeleteApplicationResourceUseCase deleteUseCase
+- ApplicationResourceWebMapper mapper
++ ResponseEntity<ApplicationResourceResponse> create(ApplicationResourceRequest,Authentication)
++ ResponseEntity<ApplicationResourceResponse> getById(Long,Authentication)
++ ResponseEntity<Page<ApplicationResourceResponse>> list(Long,Pageable,Authentication)
++ ResponseEntity<ApplicationResourceResponse> update(Long,ApplicationResourceRequest,Authentication)
++ ResponseEntity<Void> delete(Long,Authentication)
+- Long extractUserIdFromAuth(Authentication)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.external.auth.dto.UserPublicData {
+- Long id
+- String name
+- String email
+- String role
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.resource.ListResourcesUseCase {
+- ResourceRepositoryPort resourceRepository
++ Page<Resource> execute(String,Long,Boolean,Pageable,Long)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.mapper.ApplicationMapper {
++ ApplicationJpaEntity toJpaEntity(Application)
++ Application toDomain(ApplicationJpaEntity)
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.external.terraform.TerraformContentGenerator {
+- ProxmoxApiConfig proxmoxConfig
++ String generateCloudConfigYaml(Application,List<List<String>>)
++ String generateMainTfContent(Application,String)
+- boolean needsQuotes(String)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.applicationResource.DeleteApplicationResourceUseCase {
+- ApplicationResourceRepositoryPort repository
++ void execute(Long,Long)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.resourceType.GetResourceTypeUseCase {
+- ResourceTypeRepositoryPort repository
++ ResourceType execute(Long,Long)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.core.usecase.resource.CreateResourceUseCase {
+- ResourceRepositoryPort resourceRepository
+- ResourceTypeRepositoryPort resourceTypeRepository
++ Resource execute(Resource,Long,String,String)
+}
+
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.web.resourceType.mapper.ResourceTypeWebMapper {
++ ResourceType toDomain(ResourceTypeRequest)
++ ResourceTypeResponse toResponse(ResourceType)
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.web.application.dto.ApplicationRequest {
+- String name
+- String description
+- String sshUser
+- String sshPassword
+- String ipAddress
+- String status
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.external.terraform.TerraformExecutor {
+- void runCommandStream(String[],File)
+- String runCommandCapture(String[],File)
++ void init(File)
++ String apply(File)
++ String outputJson(File)
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.infrastructure.configuration.RestClientConfig {
++ RestTemplate restTemplate(RestTemplateBuilder)
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.Configuration.MapperConfig {
++ ModelMapper modelMapper()
+}
+
+interface com.ifsp.gru.oficinas4.infra.automa_infra.core.port.application.ApplicationRepositoryPort {
+~ Application save(Application)
+~ Optional<Application> findById(Long)
+~ void delete(Long)
+~ Page<Application> findAll(Pageable)
+~ Page<Application> findByNameContainingIgnoreCase(String,Pageable)
+~ Page<Application> findByStatus(String,Pageable)
+~ Page<Application> findByCreatedById(Long,Pageable)
+~ Page<Application> findByCreatedByIdAndStatus(Long,String,Pageable)
+~ Page<Application> findByNameContainingIgnoreCaseAndStatus(String,String,Pageable)
+~ boolean existsByNameAndCreatedById(String,Long)
+~ Page<Application> findByCreatedAtAfter(LocalDateTime,Pageable)
+~ Page<Application> findByLastDeployedAtAfter(LocalDateTime,Pageable)
+~ Page<Application> findByLastDeployedAtIsNull(Pageable)
+~ long countByStatus(String)
+~ long countByCreatedById(Long)
+~ long countByCreatedByIdAndStatus(Long,String)
+~ Page<Application> findByNameContainingIgnoreCaseAndCreatedById(String,Long,Pageable)
+~ Page<Application> findByNameContainingIgnoreCaseAndStatusAndCreatedById(String,String,Long,Pageable)
+~ Page<Application> findApplicationsNeedingAttention(LocalDateTime,Pageable)
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.exception.GlobalExceptionHandler {
++ ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException,WebRequest)
++ ResponseEntity<ErrorResponse> handleDuplicateResource(DuplicateResourceException,WebRequest)
++ ResponseEntity<ErrorResponse> handleUnauthorized(RuntimeException,WebRequest)
++ ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException,WebRequest)
++ ResponseEntity<ValidationErrorResponse> handleValidationErrors(MethodArgumentNotValidException,WebRequest)
++ ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException,WebRequest)
++ ResponseEntity<ErrorResponse> handleGenericException(Exception,WebRequest)
++ ResponseEntity<?> handleUnreadableBody(HttpMessageNotReadableException)
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.adapter.web.resource.ResourceController {
+- CreateResourceUseCase createUseCase
+- GetResourceUseCase getUseCase
+- ListResourcesUseCase listUseCase
+- UpdateResourceUseCase updateUseCase
+- ToggleResourceActiveUseCase toggleActiveUseCase
+- DeleteResourceUseCase deleteUseCase
+- ResourceWebMapper mapper
+- JwtService jwtService
++ ResponseEntity<ResourceResponse> create(ResourceRequest,String,Authentication)
++ ResponseEntity<ResourceResponse> getById(Long,Authentication)
++ ResponseEntity<Page<ResourceResponse>> list(String,Long,Boolean,Pageable,Authentication)
++ ResponseEntity<ResourceResponse> update(Long,ResourceRequest,Authentication)
++ ResponseEntity<ResourceResponse> toggleActive(Long,Authentication)
++ ResponseEntity<Void> delete(Long,Authentication)
+- Long extractUserIdFromAuth(Authentication)
+}
+
+
+interface com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.repository.ApplicationRepository {
+~ List<ApplicationJpaEntity> findByStatus(String)
+~ List<ApplicationJpaEntity> findByCreatedById(Long)
+~ boolean existsByNameAndCreatedById(String,Long)
+~ Page<ApplicationJpaEntity> findByNameContainingIgnoreCaseAndStatusAndCreatedById(String,String,Long,Pageable)
+~ Page<ApplicationJpaEntity> findByNameContainingIgnoreCaseAndCreatedById(String,Long,Pageable)
+~ Page<ApplicationJpaEntity> findByNameContainingIgnoreCase(String,Pageable)
+~ Page<ApplicationJpaEntity> findByStatus(String,Pageable)
+~ Page<ApplicationJpaEntity> findByCreatedById(Long,Pageable)
+~ Page<ApplicationJpaEntity> findByCreatedByIdAndStatus(Long,String,Pageable)
+~ Page<ApplicationJpaEntity> findByNameContainingIgnoreCaseAndStatus(String,String,Pageable)
+~ Page<ApplicationJpaEntity> findByCreatedAtAfter(LocalDateTime,Pageable)
+~ Page<ApplicationJpaEntity> findByLastDeployedAtAfter(LocalDateTime,Pageable)
+~ Page<ApplicationJpaEntity> findByLastDeployedAtIsNull(Pageable)
+~ Page<ApplicationJpaEntity> findByCreatedByIdOrderByCreatedAtDesc(Long,Pageable)
+~ long countByStatus(String)
+~ long countByCreatedById(Long)
+~ long countByCreatedByIdAndStatus(Long,String)
+}
+
+class com.ifsp.gru.oficinas4.infra.automa_infra.exception.ResourceNotFoundException {
+}
+
+
+com.ifsp.gru.oficinas4.infra.automa_infra.exception.RuntimeException <|-- com.ifsp.gru.oficinas4.infra.automa_infra.exception.AuthenticationException
+com.ifsp.gru.oficinas4.infra.automa_infra.core.port.applicationResources.ApplicationResourceRepositoryPort <|.. com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.ApplicationResourcePersistenceAdapter
+com.ifsp.gru.oficinas4.infra.automa_infra.exception.RuntimeException <|-- com.ifsp.gru.oficinas4.infra.automa_infra.exception.UnauthorizedException
+org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer <|.. com.ifsp.gru.oficinas4.infra.automa_infra.adapter.infrastructure.configuration.WebSocketConfig
+org.springframework.data.jpa.repository.JpaRepository <|-- com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.repository.ResourceTypeRepository
+org.springframework.web.filter.OncePerRequestFilter <|-- com.ifsp.gru.oficinas4.infra.automa_infra.Configuration.JwtAuthenticationFilter
+com.ifsp.gru.oficinas4.infra.automa_infra.exception.RuntimeException <|-- com.ifsp.gru.oficinas4.infra.automa_infra.exception.DuplicateResourceException
+com.ifsp.gru.oficinas4.infra.automa_infra.core.port.resources.ResourceRepositoryPort <|.. com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.ResourcePersistenceAdapter
+com.ifsp.gru.oficinas4.infra.automa_infra.core.port.application.ApplicationRepositoryPort <|.. com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.ApplicationPersistenceAdapter
+org.springframework.data.jpa.repository.JpaRepository <|-- com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.repository.ApplicationResourceRepository
+jakarta.persistence.AttributeConverter <|.. com.ifsp.gru.oficinas4.infra.automa_infra.Configuration.StringListConverter
+com.ifsp.gru.oficinas4.infra.automa_infra.core.port.application.ProvisioningPort <|.. com.ifsp.gru.oficinas4.infra.automa_infra.adapter.external.terraform.TerraformDeploymentService
+com.ifsp.gru.oficinas4.infra.automa_infra.adapter.external.terraform.TerraformDeploymentService +.. com.ifsp.gru.oficinas4.infra.automa_infra.adapter.external.terraform.TerraformDeploymentService$ProvisioningFailureException
+com.ifsp.gru.oficinas4.infra.automa_infra.adapter.external.terraform.RuntimeException <|-- com.ifsp.gru.oficinas4.infra.automa_infra.adapter.external.terraform.TerraformDeploymentService$ProvisioningFailureException
+com.ifsp.gru.oficinas4.infra.automa_infra.adapter.web.application.dto.ApplicationResponse +.. com.ifsp.gru.oficinas4.infra.automa_infra.adapter.web.application.dto.ApplicationResponse$UserSummary
+com.ifsp.gru.oficinas4.infra.automa_infra.exception.RuntimeException <|-- com.ifsp.gru.oficinas4.infra.automa_infra.exception.BusinessException
+org.springframework.scheduling.annotation.AsyncConfigurer <|.. com.ifsp.gru.oficinas4.infra.automa_infra.adapter.infrastructure.configuration.AsyncConfig
+com.ifsp.gru.oficinas4.infra.automa_infra.core.port.application.ProvisioningPort +.. com.ifsp.gru.oficinas4.infra.automa_infra.core.port.application.ProvisioningPort$ProvisioningResult
+com.ifsp.gru.oficinas4.infra.automa_infra.core.port.resourceTypes.ResourceTypeRepositoryPort <|.. com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.ResourceTypePersistenceAdapter
+org.springframework.security.core.userdetails.UserDetails <|.. com.ifsp.gru.oficinas4.infra.automa_infra.core.domain.User
+org.springframework.data.jpa.repository.JpaRepository <|-- com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.repository.ResourceRepository
+org.springframework.messaging.support.ChannelInterceptor <|.. com.ifsp.gru.oficinas4.infra.automa_infra.adapter.infrastructure.configuration.WebSocketAuthInterceptor
+org.springframework.data.jpa.repository.JpaRepository <|-- com.ifsp.gru.oficinas4.infra.automa_infra.adapter.persistence.repository.ApplicationRepository
+com.ifsp.gru.oficinas4.infra.automa_infra.exception.RuntimeException <|-- com.ifsp.gru.oficinas4.infra.automa_infra.exception.ResourceNotFoundException
+@enduml

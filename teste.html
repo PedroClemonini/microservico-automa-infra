@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste WebSocket Final</title>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <style>
+        body { font-family: monospace; background: #222; color: #0f0; padding: 20px; }
+        .log { border-bottom: 1px solid #444; padding: 5px 0; }
+        .error { color: #f55; }
+        .success { color: #5f5; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2>LOG DE CONEXÃO WEBSOCKET</h2>
+    <div id="output"></div>
+
+    <script>
+        // --- CONFIGURAÇÃO ---
+        const WS_URL = 'ws://localhost:8082/ws'; // Passando pelo NGINX
+        
+        // ⚠️ COLE SEU TOKEN AQUI (Mantenha o Bearer e o espaço)
+        const TOKEN = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoicGVkcm8iLCJpZCI6MSwic3ViIjoicGVkcm9AZW1haWwuY29tIiwiaWF0IjoxNzY1NzEzNzM0LCJleHAiOjE3NjU4MDAxMzR9.OA3GPPG8my9QvjbAMACtBIoq3aIgsgevJFyUCrMq22Y""'; 
+        // --------------------
+
+        function log(msg, type = '') {
+            const div = document.createElement('div');
+            div.className = 'log ' + type;
+            div.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            document.getElementById('output').appendChild(div);
+            console.log(msg);
+        }
+
+        const client = new StompJs.Client({
+            brokerURL: WS_URL,
+            
+            // Headers de Conexão (Onde vai o Token)
+            connectHeaders: {
+                Authorization: TOKEN
+            },
+
+            // Debug para ver o protocolo STOMP cru
+            debug: function (str) {
+                // Filtra logs de ping/pong para não poluir
+                if(!str.includes("PING") && !str.includes("PONG")) log(str);
+            },
+
+            // Callback de Reconexão (ajuda a persistir)
+            reconnectDelay: 5000,
+            heartbeatIncoming: 4000,
+            heartbeatOutgoing: 4000,
+        });
+
+        client.onConnect = function (frame) {
+            log('✅ CONECTADO AO BROKER!', 'success');
+            
+            // ASSINATURA 1: STATUS
+            log('--> Assinando: /user/queue/deploy-status');
+            client.subscribe('/user/queue/deploy-status', (message) => {
+                log('📩 STATUS RECEBIDO: ' + message.body, 'success');
+                alert("STATUS CHEGOU: " + message.body);
+            });
+
+            // ASSINATURA 2: PROGRESSO
+            log('--> Assinando: /user/queue/deploy-progress');
+            client.subscribe('/user/queue/deploy-progress', (message) => {
+                log('📩 PROGRESSO RECEBIDO: ' + message.body);
+            });
+        };
+
+        client.onStompError = function (frame) {
+            log('❌ ERRO STOMP: ' + frame.headers['message'], 'error');
+            log('Detalhes: ' + frame.body, 'error');
+        };
+
+        client.onWebSocketClose = function () {
+            log('⚠️ Conexão WebSocket Fechada (Verifique Logs do Spring/NGINX)', 'error');
+        };
+
+        log('Tentando conectar em: ' + WS_URL + '...');
+        client.activate();
+    </script>
+</body>
+</html>
