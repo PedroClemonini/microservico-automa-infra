@@ -10,7 +10,7 @@ public class ResourceMapper {
 
     private final ResourceTypeMapper resourceTypeMapper;
 
-    // Converte Domínio -> JPA (Para salvar no banco)
+
     public ResourceJpaEntity toJpaEntity(Resource domain) {
         if (domain == null) {
             return null;
@@ -18,17 +18,17 @@ public class ResourceMapper {
 
         ResourceJpaEntity entity = new ResourceJpaEntity();
 
-        // Campos simples
+
         entity.setId(domain.getId());
         entity.setName(domain.getName());
         entity.setDescription(domain.getDescription());
         entity.setVersion(domain.getVersion());
-        entity.setCodeSnippet(domain.getCodeSnippet()); // A conversão List<String> é tratada na Entity (via Converter)
+        entity.setCodeSnippet(domain.getCodeSnippet());
         entity.setActive(domain.getActive());
         entity.setCreatedAt(domain.getCreatedAt());
         entity.setUpdatedAt(domain.getUpdatedAt());
 
-        // Relacionamento com ResourceType
+
         if (domain.getResourceType() != null) {
             entity.setResourceType(resourceTypeMapper.toJpaEntity(domain.getResourceType()));
         }

@@ -30,7 +30,6 @@ public interface ApplicationRepository extends JpaRepository<ApplicationJpaEntit
     Page<ApplicationJpaEntity> findByLastDeployedAtAfter(LocalDateTime date, Pageable pageable);
     Page<ApplicationJpaEntity> findByLastDeployedAtIsNull(Pageable pageable);
 
-    // Consultas customizadas (seus métodos específicos)
     Page<ApplicationJpaEntity> findByCreatedByIdOrderByCreatedAtDesc(Long userId, Pageable pageable); // Para recentApplicationsByUser
 
     long countByStatus(String status);

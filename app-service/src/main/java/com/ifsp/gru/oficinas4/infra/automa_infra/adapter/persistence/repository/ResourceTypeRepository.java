@@ -9,10 +9,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ResourceTypeRepository extends JpaRepository<ResourceTypeJpaEntity, Long> {
 
-    // O Spring gera: WHERE created_by_id = ?
+
     Page<ResourceTypeJpaEntity> findByCreatedById(Long createdById, Pageable pageable);
 
-    // O Spring gera: WHERE UPPER(name) LIKE UPPER(%?%) AND created_by_id = ?
     Page<ResourceTypeJpaEntity> findByNameContainingIgnoreCaseAndCreatedById(String name, Long createdById, Pageable pageable);
     boolean existsByNameIgnoreCase(String name);
     Page<ResourceTypeJpaEntity> findByNameContainingIgnoreCase(String name, Pageable pageable);

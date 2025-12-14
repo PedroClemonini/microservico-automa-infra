@@ -27,6 +27,5 @@ public interface ApplicationResourceRepository extends JpaRepository<Application
     List<ApplicationResourceJpaEntity> findAllByApplicationId(Long applicationId);
     List<ApplicationResource> findByApplicationId(Long applicationId);
 
-    // Método dos Snippets também deve ser List (se já não estiver)
     List<List<String>> findCodeSnippetsByApplicationId(Long applicationId);
 }

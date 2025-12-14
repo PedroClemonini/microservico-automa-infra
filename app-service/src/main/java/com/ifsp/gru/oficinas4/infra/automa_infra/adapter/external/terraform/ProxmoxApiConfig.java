@@ -12,16 +12,16 @@ import org.springframework.stereotype.Component;
 @Setter
 public class ProxmoxApiConfig {
 
-    // Configurações do Proxmox API
+
     private String endpoint;
     private String apiToken;
     private boolean insecure = true; // Valor default, mas pode ser sobrescrito
 
-    // Configurações SSH (usadas no bloco provider "proxmox")
+
     private String sshUsername;
     private String sshPassword;
 
-    // Configurações do nó (Node)
+
     private String nodeName;
     private String nodeAddress;
 }

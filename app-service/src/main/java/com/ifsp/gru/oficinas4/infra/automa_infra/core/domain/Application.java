@@ -13,30 +13,17 @@ import java.time.LocalDateTime;
 public class Application {
 
     private Long id;
-
-
-    private User createdBy;
-
     private String name;
-
     private String description;
-
     private String status;
-
     private Long createdById;
     private String createdByName;
     private String createdByEmail;
-
     private String sshUser;
-
     private String sshPassword;
-
     private String ipAddress;
-
     private LocalDateTime createdAt = LocalDateTime.now();
-
     private LocalDateTime updatedAt;
-
     private LocalDateTime lastDeployedAt;
 
 }

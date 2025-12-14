@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ApplicationWebMapper {
+public class  ApplicationWebMapper {
 
 
     public Application toDomain(ApplicationRequest request) {

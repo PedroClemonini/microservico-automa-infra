@@ -43,9 +43,9 @@ public class AuthController {
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(registeredUser.getEmail());
 
-        // 1. Prepara o Mapa com o ID
+
         Map<String, Object> extraClaims = new HashMap<>();
-        extraClaims.put("id", registeredUser.getId()); // <--- Corrigido: usa 'registeredUser'
+        extraClaims.put("id", registeredUser.getId());
 
         // 2. Gera o token PASSANDO O MAPA
         final String jwt = jwtService.generateToken(extraClaims, userDetails);
@@ -61,7 +61,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid UserLoginRequest request) {
 
-        // 1. Autentica senha/email
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -69,10 +69,9 @@ public class AuthController {
                 )
         );
 
-        // 2. RECUPERA OS DADOS COMPLETOS PRIMEIRO (Para pegar o ID)
+
         User userDomain = findUserByEmailUseCase.execute(request.getEmail());
 
-        // 3. Carrega o UserDetails técnico
         final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
 
         // 4. Monta o Mapa com o ID

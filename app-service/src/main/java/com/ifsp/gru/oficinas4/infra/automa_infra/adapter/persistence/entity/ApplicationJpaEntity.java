@@ -43,7 +43,7 @@ public class ApplicationJpaEntity {
     private String sshUser;
 
     @Column(nullable = false)
-    private String sshPassword; // Idealmente, isso seria criptografado antes de salvar
+    private String sshPassword;
 
     private String ipAddress;
 
@@ -56,7 +56,6 @@ public class ApplicationJpaEntity {
     @Column(name = "last_deployed_at")
     private LocalDateTime lastDeployedAt;
 
-    // Opcional: Hooks do JPA para garantir timestamps automáticos se o Mapper falhar
     @PrePersist
     protected void onCreate() {
         if (this.createdAt == null) this.createdAt = LocalDateTime.now();

@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ApplicationResourceMapper {
 
-    // Injeção dos Mappers das entidades relacionadas para converter a árvore completa
+
     private final ApplicationMapper applicationMapper;
     private final ResourceMapper resourceMapper;
 
-    // Converte Domínio -> JPA (Para salvar no banco)
+
     public ApplicationResourceJpaEntity toJpaEntity(ApplicationResource domain) {
         if (domain == null) {
             return null;
@@ -25,12 +25,12 @@ public class ApplicationResourceMapper {
         entity.setId(domain.getId());
         entity.setAddedAt(domain.getAddedAt());
 
-        // Mapeamento da Aplicação
+
         if (domain.getApplication() != null) {
             entity.setApplication(applicationMapper.toJpaEntity(domain.getApplication()));
         }
 
-        // Mapeamento do Recurso
+
         if (domain.getResources() != null) {
             entity.setResources(resourceMapper.toJpaEntity(domain.getResources()));
         }
@@ -38,7 +38,7 @@ public class ApplicationResourceMapper {
         return entity;
     }
 
-    // Converte JPA -> Domínio (Para usar nas Regras de Negócio)
+
     public ApplicationResource toDomain(ApplicationResourceJpaEntity entity) {
         if (entity == null) {
             return null;
@@ -49,12 +49,12 @@ public class ApplicationResourceMapper {
         domain.setId(entity.getId());
         domain.setAddedAt(entity.getAddedAt());
 
-        // Mapeamento da Aplicação
+
         if (entity.getApplication() != null) {
             domain.setApplication(applicationMapper.toDomain(entity.getApplication()));
         }
 
-        // Mapeamento do Recurso
+
         if (entity.getResources() != null) {
             domain.setResources(resourceMapper.toDomain(entity.getResources()));
         }

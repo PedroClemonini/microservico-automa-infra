@@ -12,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 public class Resource {
 
-
     private Long id;
 
     private ResourceType resourceType;
