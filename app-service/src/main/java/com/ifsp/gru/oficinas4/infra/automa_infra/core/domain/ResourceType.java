@@ -20,7 +20,6 @@ public class ResourceType {
     private String createdByName;
     private String createdByEmail;
 
-    // --- TIMESTAMPS ---
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
